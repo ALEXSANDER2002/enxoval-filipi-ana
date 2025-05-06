@@ -1,17 +1,46 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ItemList } from './components/ItemList';
 import { Header } from './components/Header';
-import { Item } from './data/items';
+import { categories } from './data/items';
 
 export default function Home() {
-  const [checkedItems, setCheckedItems] = useState<Item[]>([]);
   const [progress, setProgress] = useState(0);
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+
+  // Carrega os itens salvos do localStorage
+  useEffect(() => {
+    const savedItems = localStorage.getItem('checkedItems');
+    if (savedItems) {
+      setCheckedItems(new Set(JSON.parse(savedItems)));
+    }
+  }, []);
+
+  // Salva os itens no localStorage quando houver mudanças
+  useEffect(() => {
+    localStorage.setItem('checkedItems', JSON.stringify([...checkedItems]));
+  }, [checkedItems]);
 
   const handleItemCheck = (itemId: string, checked: boolean) => {
-    // Aqui você pode implementar a lógica para salvar o estado no localStorage ou em um banco de dados
-    console.log(`Item ${itemId} ${checked ? 'marcado' : 'desmarcado'}`);
+    setCheckedItems(prev => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(itemId);
+      } else {
+        next.delete(itemId);
+      }
+      return next;
+    });
+  };
+
+  // Encontra o nome do item pelo ID
+  const getItemName = (itemId: string) => {
+    for (const category of categories) {
+      const item = category.items.find(item => item.id === itemId);
+      if (item) return item.name;
+    }
+    return '';
   };
 
   return (
@@ -35,19 +64,19 @@ export default function Home() {
                 Itens Selecionados
               </h2>
               <div className="text-sm text-gray-500 mb-4">
-                {checkedItems.length} itens selecionados
+                {checkedItems.size} itens selecionados
               </div>
               
-              {checkedItems.length > 0 ? (
+              {checkedItems.size > 0 ? (
                 <ul className="space-y-3">
-                  {checkedItems.map(item => (
+                  {[...checkedItems].map(itemId => (
                     <li 
-                      key={item.id} 
+                      key={itemId} 
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                     >
-                      <span className="text-gray-700">{item.name}</span>
+                      <span className="text-gray-700">{getItemName(itemId)}</span>
                       <button
-                        onClick={() => handleItemCheck(item.id, false)}
+                        onClick={() => handleItemCheck(itemId, false)}
                         className="text-pink-500 hover:text-pink-700 transition-colors duration-200"
                       >
                         Remover

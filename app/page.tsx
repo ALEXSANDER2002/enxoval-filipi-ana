@@ -1,27 +1,22 @@
 "use client"
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ItemList } from './components/ItemList';
 import { Header } from './components/Header';
 import { Item } from './data/items';
 
 export default function Home() {
   const [checkedItems, setCheckedItems] = useState<Item[]>([]);
+  const [progress, setProgress] = useState(0);
 
-  const handleItemCheck = (item: Item) => {
-    setCheckedItems(prev => {
-      const isChecked = prev.some(i => i.id === item.id);
-      if (isChecked) {
-        return prev.filter(i => i.id !== item.id);
-      } else {
-        return [...prev, item];
-      }
-    });
+  const handleItemCheck = (itemId: string, checked: boolean) => {
+    // Aqui você pode implementar a lógica para salvar o estado no localStorage ou em um banco de dados
+    console.log(`Item ${itemId} ${checked ? 'marcado' : 'desmarcado'}`);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <Header />
+      <Header progress={progress} />
       
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -30,7 +25,7 @@ export default function Home() {
               <h2 className="text-2xl font-semibold text-gray-800 mb-6">
                 Lista de Itens
               </h2>
-              <ItemList onItemCheck={handleItemCheck} />
+              <ItemList onItemCheck={handleItemCheck} onProgressUpdate={setProgress} />
             </div>
           </div>
 
@@ -52,7 +47,7 @@ export default function Home() {
                     >
                       <span className="text-gray-700">{item.name}</span>
                       <button
-                        onClick={() => handleItemCheck(item)}
+                        onClick={() => handleItemCheck(item.id, false)}
                         className="text-pink-500 hover:text-pink-700 transition-colors duration-200"
                       >
                         Remover

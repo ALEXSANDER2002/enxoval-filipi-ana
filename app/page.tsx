@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from 'react';
-import { ItemList } from '@/components/ItemList';
-import { Header } from '@/components/Header';
-import { Item } from '@/data/items';
+import { ItemList } from '../src/components/ItemList';
+import { Header } from '../src/components/Header';
+import { Item } from '../src/data/items';
 
 export default function Home() {
   const [checkedItems, setCheckedItems] = useState<Item[]>([]);

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ItemList } from './components/ItemList';
 import { Header } from './components/Header';
-import { Item } from '../src/data/items';
+import { Item } from './data/items';
 
 export default function Home() {
   const [checkedItems, setCheckedItems] = useState<Item[]>([]);
